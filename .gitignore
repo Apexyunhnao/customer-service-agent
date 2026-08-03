@@ -1,0 +1,17 @@
+# API 密钥 - 绝不提交
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# 数据库
+data/*.db
+*.db-shm
+*.db-wal
+
+# 日志
+logs/
+eval_output.txt

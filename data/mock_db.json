@@ -1,0 +1,730 @@
+{
+  "customers": [
+    {
+      "id": 1,
+      "name": "张伟",
+      "phone": "13800138001",
+      "address": "北京市朝阳区建国路88号院1号楼1203室",
+      "vip": "铂金"
+    },
+    {
+      "id": 2,
+      "name": "李娜",
+      "phone": "13900139002",
+      "address": "上海市浦东新区张杨路500号华润时代广场21F",
+      "vip": "黄金"
+    },
+    {
+      "id": 3,
+      "name": "王磊",
+      "phone": "13700137003",
+      "address": "广州市天河区天河路385号太古汇B2层",
+      "vip": "普通"
+    },
+    {
+      "id": 4,
+      "name": "陈静",
+      "phone": "13600136004",
+      "address": "深圳市南山区科技园南区R2-A栋506",
+      "vip": "铂金"
+    },
+    {
+      "id": 5,
+      "name": "刘洋",
+      "phone": "13500135005",
+      "address": "杭州市西湖区文三路478号华星时代广场9楼",
+      "vip": "黄金"
+    },
+    {
+      "id": 6,
+      "name": "赵敏",
+      "phone": "13400134006",
+      "address": "成都市武侯区天府大道北段28号茂业中心1508",
+      "vip": "普通"
+    },
+    {
+      "id": 7,
+      "name": "孙鹏",
+      "phone": "13300133007",
+      "address": "南京市鼓楼区汉中路180号星汉大厦11A",
+      "vip": "黄金"
+    },
+    {
+      "id": 8,
+      "name": "周婷",
+      "phone": "13200132008",
+      "address": "武汉市洪山区珞喻路1037号光谷广场B座2201",
+      "vip": "普通"
+    },
+    {
+      "id": 9,
+      "name": "吴强",
+      "phone": "13100131009",
+      "address": "西安市雁塔区长安南路300号小寨银泰城16层",
+      "vip": "铂金"
+    },
+    {
+      "id": 10,
+      "name": "郑爽",
+      "phone": "15000150010",
+      "address": "重庆市渝中区解放碑步行街1号大都会广场33F",
+      "vip": "黄金"
+    },
+    {
+      "id": 11,
+      "name": "冯涛",
+      "phone": "15100151011",
+      "address": "长沙市岳麓区麓谷大道658号麓谷信息港A栋705",
+      "vip": "普通"
+    },
+    {
+      "id": 12,
+      "name": "蒋丽",
+      "phone": "15200152012",
+      "address": "青岛市市南区香港中路8号中铁青岛中心29层",
+      "vip": "铂金"
+    },
+    {
+      "id": 13,
+      "name": "韩冰",
+      "phone": "15300153013",
+      "address": "大连市中山区人民路55号亚太国际金融大厦18F",
+      "vip": "普通"
+    },
+    {
+      "id": 14,
+      "name": "曹阳",
+      "phone": "15500155014",
+      "address": "厦门市思明区鹭江道100号财富中心2602",
+      "vip": "黄金"
+    },
+    {
+      "id": 15,
+      "name": "邓超",
+      "phone": "15600156015",
+      "address": "苏州市姑苏区三香路999号市行政中心对面",
+      "vip": "普通"
+    },
+    {
+      "id": 16,
+      "name": "彭芳",
+      "phone": "15700157016",
+      "address": "天津市和平区南京路129号万科世贸广场A座1401",
+      "vip": "铂金"
+    },
+    {
+      "id": 17,
+      "name": "沈健",
+      "phone": "15800158017",
+      "address": "合肥市蜀山区望江西路69号西湖国际广场B栋1810",
+      "vip": "普通"
+    },
+    {
+      "id": 18,
+      "name": "姚雪",
+      "phone": "15900159018",
+      "address": "济南市历下区泉城路180号恒隆广场",
+      "vip": "黄金"
+    },
+    {
+      "id": 19,
+      "name": "唐明",
+      "phone": "18600186019",
+      "address": "福州市鼓楼区五四路158号环球广场12层",
+      "vip": "普通"
+    },
+    {
+      "id": 20,
+      "name": "余欢",
+      "phone": "18700187020",
+      "address": "郑州市金水区花园路126号正弘城21楼",
+      "vip": "铂金"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-1001",
+      "customer_id": 1,
+      "product": "iPhone 16 Pro 256GB",
+      "amount": 8999.0,
+      "status": "已签收",
+      "created_at": "2026-07-20 10:32:00"
+    },
+    {
+      "order_id": "ORD-1002",
+      "customer_id": 2,
+      "product": "戴森V15吸尘器",
+      "amount": 4990.0,
+      "status": "已发货",
+      "created_at": "2026-07-28 14:15:00"
+    },
+    {
+      "order_id": "ORD-1003",
+      "customer_id": 3,
+      "product": "华为Watch GT5",
+      "amount": 2288.0,
+      "status": "待发货",
+      "created_at": "2026-08-01 09:20:00"
+    },
+    {
+      "order_id": "ORD-1004",
+      "customer_id": 4,
+      "product": "Sony WH-1000XM6",
+      "amount": 2699.0,
+      "status": "已签收",
+      "created_at": "2026-07-15 16:45:00"
+    },
+    {
+      "order_id": "ORD-1005",
+      "customer_id": 5,
+      "product": "飞利浦电动牙刷HX9960",
+      "amount": 1299.0,
+      "status": "已发货",
+      "created_at": "2026-07-30 11:08:00"
+    },
+    {
+      "order_id": "ORD-1006",
+      "customer_id": 6,
+      "product": "Apple MacBook Air M4",
+      "amount": 9499.0,
+      "status": "已签收",
+      "created_at": "2026-07-18 08:00:00"
+    },
+    {
+      "order_id": "ORD-1007",
+      "customer_id": 7,
+      "product": "小米空气净化器4 Pro",
+      "amount": 2199.0,
+      "status": "已发货",
+      "created_at": "2026-08-02 20:30:00"
+    },
+    {
+      "order_id": "ORD-1008",
+      "customer_id": 8,
+      "product": "海蓝之谜精华面霜60ml",
+      "amount": 2680.0,
+      "status": "已取消",
+      "created_at": "2026-07-25 13:10:00"
+    },
+    {
+      "order_id": "ORD-1009",
+      "customer_id": 9,
+      "product": "任天堂Switch 2",
+      "amount": 3299.0,
+      "status": "待发货",
+      "created_at": "2026-08-03 07:55:00"
+    },
+    {
+      "order_id": "ORD-1010",
+      "customer_id": 10,
+      "product": "三只松鼠坚果礼盒1888g",
+      "amount": 168.0,
+      "status": "已签收",
+      "created_at": "2026-07-22 12:00:00"
+    },
+    {
+      "order_id": "ORD-1011",
+      "customer_id": 1,
+      "product": "安踏运动鞋C37",
+      "amount": 499.0,
+      "status": "已发货",
+      "created_at": "2026-07-29 17:22:00"
+    },
+    {
+      "order_id": "ORD-1012",
+      "customer_id": 11,
+      "product": "美的变频空调1.5匹",
+      "amount": 3299.0,
+      "status": "待发货",
+      "created_at": "2026-08-02 10:45:00"
+    },
+    {
+      "order_id": "ORD-1013",
+      "customer_id": 12,
+      "product": "戴尔U2723QE显示器",
+      "amount": 4599.0,
+      "status": "已签收",
+      "created_at": "2026-07-19 15:30:00"
+    },
+    {
+      "order_id": "ORD-1014",
+      "customer_id": 13,
+      "product": "科颜氏白泥面膜125ml",
+      "amount": 315.0,
+      "status": "已发货",
+      "created_at": "2026-07-31 09:10:00"
+    },
+    {
+      "order_id": "ORD-1015",
+      "customer_id": 14,
+      "product": "iPhone 16 Pro 256GB",
+      "amount": 8999.0,
+      "status": "已取消",
+      "created_at": "2026-07-27 18:50:00"
+    },
+    {
+      "order_id": "ORD-1016",
+      "customer_id": 15,
+      "product": "松下电饭煲SR-HK151",
+      "amount": 1599.0,
+      "status": "已发货",
+      "created_at": "2026-07-28 11:33:00"
+    },
+    {
+      "order_id": "ORD-1017",
+      "customer_id": 16,
+      "product": "Chanel No.5 香水100ml",
+      "amount": 1200.0,
+      "status": "待发货",
+      "created_at": "2026-08-01 14:20:00"
+    },
+    {
+      "order_id": "ORD-1018",
+      "customer_id": 17,
+      "product": "大疆Pocket 3",
+      "amount": 3499.0,
+      "status": "已签收",
+      "created_at": "2026-07-21 10:05:00"
+    },
+    {
+      "order_id": "ORD-1019",
+      "customer_id": 18,
+      "product": "德龙全自动咖啡机ECAM23",
+      "amount": 4280.0,
+      "status": "已发货",
+      "created_at": "2026-08-02 16:40:00"
+    },
+    {
+      "order_id": "ORD-1020",
+      "customer_id": 19,
+      "product": "三只松鼠坚果礼盒1888g",
+      "amount": 168.0,
+      "status": "已签收",
+      "created_at": "2026-07-23 08:30:00"
+    },
+    {
+      "order_id": "ORD-1021",
+      "customer_id": 20,
+      "product": "Apple MacBook Air M4",
+      "amount": 9499.0,
+      "status": "已发货",
+      "created_at": "2026-08-03 06:15:00"
+    },
+    {
+      "order_id": "ORD-1022",
+      "customer_id": 2,
+      "product": "华为Watch GT5",
+      "amount": 2288.0,
+      "status": "待发货",
+      "created_at": "2026-08-02 22:10:00"
+    },
+    {
+      "order_id": "ORD-1023",
+      "customer_id": 5,
+      "product": "安踏运动鞋C37",
+      "amount": 499.0,
+      "status": "已取消",
+      "created_at": "2026-07-26 15:00:00"
+    },
+    {
+      "order_id": "ORD-1024",
+      "customer_id": 8,
+      "product": "小米空气净化器4 Pro",
+      "amount": 2199.0,
+      "status": "已签收",
+      "created_at": "2026-07-17 13:20:00"
+    },
+    {
+      "order_id": "ORD-1025",
+      "customer_id": 12,
+      "product": "飞利浦电动牙刷HX9960",
+      "amount": 1299.0,
+      "status": "已发货",
+      "created_at": "2026-07-30 09:45:00"
+    },
+    {
+      "order_id": "ORD-1026",
+      "customer_id": 3,
+      "product": "任天堂Switch 2",
+      "amount": 3299.0,
+      "status": "已签收",
+      "created_at": "2026-07-16 16:55:00"
+    },
+    {
+      "order_id": "ORD-1027",
+      "customer_id": 7,
+      "product": "美的变频空调1.5匹",
+      "amount": 3299.0,
+      "status": "待发货",
+      "created_at": "2026-08-03 01:30:00"
+    },
+    {
+      "order_id": "ORD-1028",
+      "customer_id": 14,
+      "product": "戴森V15吸尘器",
+      "amount": 4990.0,
+      "status": "已发货",
+      "created_at": "2026-08-01 08:00:00"
+    },
+    {
+      "order_id": "ORD-1029",
+      "customer_id": 16,
+      "product": "科颜氏白泥面膜125ml",
+      "amount": 315.0,
+      "status": "已取消",
+      "created_at": "2026-07-24 12:30:00"
+    },
+    {
+      "order_id": "ORD-1030",
+      "customer_id": 9,
+      "product": "大疆Pocket 3",
+      "amount": 3499.0,
+      "status": "待发货",
+      "created_at": "2026-08-03 08:50:00"
+    }
+  ],
+  "logistics": [
+    {
+      "order_id": "ORD-1001",
+      "company": "顺丰速运",
+      "tracking_no": "SF1234567890",
+      "current_location": "北京市朝阳区",
+      "status": "已签收",
+      "updated_at": "2026-08-01 08:00:00"
+    },
+    {
+      "order_id": "ORD-1002",
+      "company": "京东物流",
+      "tracking_no": "JD9876543210",
+      "current_location": "上海市浦东新区",
+      "status": "运输中",
+      "updated_at": "2026-08-01 15:00:00"
+    },
+    {
+      "order_id": "ORD-1004",
+      "company": "顺丰速运",
+      "tracking_no": "SF1122334455",
+      "current_location": "深圳市南山区",
+      "status": "已签收",
+      "updated_at": "2026-08-02 03:53:00"
+    },
+    {
+      "order_id": "ORD-1005",
+      "company": "中通快递",
+      "tracking_no": "ZT5566778899",
+      "current_location": "杭州市拱墅区中转站",
+      "status": "异常",
+      "updated_at": "2026-08-01 18:00:00"
+    },
+    {
+      "order_id": "ORD-1006",
+      "company": "京东物流",
+      "tracking_no": "JD9988776655",
+      "current_location": "成都市武侯区",
+      "status": "已签收",
+      "updated_at": "2026-07-30 10:54:00"
+    },
+    {
+      "order_id": "ORD-1007",
+      "company": "顺丰速运",
+      "tracking_no": "SF5544332211",
+      "current_location": "南京市鼓楼区",
+      "status": "运输中",
+      "updated_at": "2026-08-01 21:00:00"
+    },
+    {
+      "order_id": "ORD-1010",
+      "company": "圆通速递",
+      "tracking_no": "YT7788990011",
+      "current_location": "重庆市渝中区",
+      "status": "已签收",
+      "updated_at": "2026-08-02 00:00:00"
+    },
+    {
+      "order_id": "ORD-1011",
+      "company": "中通快递",
+      "tracking_no": "ZT1122113300",
+      "current_location": "北京市通州区转运中心",
+      "status": "运输中",
+      "updated_at": "2026-08-02 07:00:00"
+    },
+    {
+      "order_id": "ORD-1013",
+      "company": "京东物流",
+      "tracking_no": "JD6655443322",
+      "current_location": "青岛市市南区",
+      "status": "已签收",
+      "updated_at": "2026-07-30 17:21:00"
+    },
+    {
+      "order_id": "ORD-1014",
+      "company": "韵达快递",
+      "tracking_no": "YD9911882277",
+      "current_location": "大连市甘井子区",
+      "status": "运输中",
+      "updated_at": "2026-08-02 10:00:00"
+    },
+    {
+      "order_id": "ORD-1016",
+      "company": "圆通速递",
+      "tracking_no": "YT4455667788",
+      "current_location": "苏州市吴中区",
+      "status": "异常",
+      "updated_at": "2026-08-02 15:00:00"
+    },
+    {
+      "order_id": "ORD-1018",
+      "company": "顺丰速运",
+      "tracking_no": "SF7788996655",
+      "current_location": "合肥市蜀山区",
+      "status": "已签收",
+      "updated_at": "2026-08-01 00:20:00"
+    },
+    {
+      "order_id": "ORD-1019",
+      "company": "京东物流",
+      "tracking_no": "JD3344556677",
+      "current_location": "济南市历下区",
+      "status": "运输中",
+      "updated_at": "2026-08-02 18:00:00"
+    },
+    {
+      "order_id": "ORD-1020",
+      "company": "中通快递",
+      "tracking_no": "ZT8899001122",
+      "current_location": "福州市鼓楼区",
+      "status": "已签收",
+      "updated_at": "2026-08-02 23:00:00"
+    },
+    {
+      "order_id": "ORD-1021",
+      "company": "韵达快递",
+      "tracking_no": "YD2233445566",
+      "current_location": "郑州市中牟县转运中心",
+      "status": "运输中",
+      "updated_at": "2026-08-03 06:00:00"
+    },
+    {
+      "order_id": "ORD-1024",
+      "company": "圆通速递",
+      "tracking_no": "YT6677889900",
+      "current_location": "武汉市洪山区",
+      "status": "已签收",
+      "updated_at": "2026-08-03 15:16:00"
+    },
+    {
+      "order_id": "ORD-1025",
+      "company": "顺丰速运",
+      "tracking_no": "SF9900112233",
+      "current_location": "青岛市城阳区",
+      "status": "运输中",
+      "updated_at": "2026-08-03 11:00:00"
+    },
+    {
+      "order_id": "ORD-1026",
+      "company": "京东物流",
+      "tracking_no": "JD1122443355",
+      "current_location": "广州市白云区",
+      "status": "已签收",
+      "updated_at": "2026-08-01 19:40:00"
+    },
+    {
+      "order_id": "ORD-1028",
+      "company": "中通快递",
+      "tracking_no": "ZT3355779911",
+      "current_location": "厦门市湖里区中转站",
+      "status": "异常",
+      "updated_at": "2026-07-26 14:00:00"
+    },
+    {
+      "order_id": "ORD-1003",
+      "company": "顺丰速运",
+      "tracking_no": "SF4400221133",
+      "current_location": "广州市天河区中转站",
+      "status": "运输中",
+      "updated_at": "2026-08-03 16:00:00"
+    },
+    {
+      "order_id": "ORD-1009",
+      "company": "京东物流",
+      "tracking_no": "JD5577331199",
+      "current_location": "西安市雁塔区",
+      "status": "运输中",
+      "updated_at": "2026-08-03 21:00:00"
+    },
+    {
+      "order_id": "ORD-1012",
+      "company": "圆通速递",
+      "tracking_no": "YT1133995577",
+      "current_location": "长沙市岳麓区转运中心",
+      "status": "运输中",
+      "updated_at": "2026-08-01 02:00:00"
+    },
+    {
+      "order_id": "ORD-1017",
+      "company": "韵达快递",
+      "tracking_no": "YD8844556611",
+      "current_location": "天津市和平区",
+      "status": "运输中",
+      "updated_at": "2026-08-01 05:00:00"
+    },
+    {
+      "order_id": "ORD-1022",
+      "company": "顺丰速运",
+      "tracking_no": "SF3366998855",
+      "current_location": "上海市松江区中转站",
+      "status": "运输中",
+      "updated_at": "2026-08-01 10:00:00"
+    },
+    {
+      "order_id": "ORD-1027",
+      "company": "中通快递",
+      "tracking_no": "ZT7722004488",
+      "current_location": "南京市栖霞区",
+      "status": "运输中",
+      "updated_at": "2026-08-01 13:00:00"
+    },
+    {
+      "order_id": "ORD-1030",
+      "company": "京东物流",
+      "tracking_no": "JD9988005544",
+      "current_location": "西安市未央区",
+      "status": "运输中",
+      "updated_at": "2026-08-01 16:00:00"
+    },
+    {
+      "order_id": "ORD-1015",
+      "company": "顺丰速运",
+      "tracking_no": "SF1155993377",
+      "current_location": "厦门市思明区",
+      "status": "异常",
+      "updated_at": "2026-07-25 10:30:00"
+    },
+    {
+      "order_id": "ORD-1023",
+      "company": "韵达快递",
+      "tracking_no": "YD6699338811",
+      "current_location": "杭州市萧山区中转站",
+      "status": "运输中",
+      "updated_at": "2026-08-01 19:00:00"
+    },
+    {
+      "order_id": "ORD-1029",
+      "company": "圆通速递",
+      "tracking_no": "YT3300448855",
+      "current_location": "天津市滨海新区",
+      "status": "异常",
+      "updated_at": "2026-07-24 09:15:00"
+    },
+    {
+      "order_id": "ORD-1008",
+      "company": "中通快递",
+      "tracking_no": "ZT9911227733",
+      "current_location": "武汉市武昌区",
+      "status": "运输中",
+      "updated_at": "2026-08-02 00:00:00"
+    }
+  ],
+  "products": [
+    {
+      "name": "iPhone 16 Pro 256GB",
+      "price": 8999.0,
+      "stock": 45
+    },
+    {
+      "name": "Apple MacBook Air M4",
+      "price": 9499.0,
+      "stock": 18
+    },
+    {
+      "name": "华为Watch GT5",
+      "price": 2288.0,
+      "stock": 120
+    },
+    {
+      "name": "Sony WH-1000XM6",
+      "price": 2699.0,
+      "stock": 63
+    },
+    {
+      "name": "任天堂Switch 2",
+      "price": 3299.0,
+      "stock": 5
+    },
+    {
+      "name": "大疆Pocket 3",
+      "price": 3499.0,
+      "stock": 22
+    },
+    {
+      "name": "戴森V15吸尘器",
+      "price": 4990.0,
+      "stock": 30
+    },
+    {
+      "name": "飞利浦电动牙刷HX9960",
+      "price": 1299.0,
+      "stock": 87
+    },
+    {
+      "name": "小米空气净化器4 Pro",
+      "price": 2199.0,
+      "stock": 55
+    },
+    {
+      "name": "美的变频空调1.5匹",
+      "price": 3299.0,
+      "stock": 12
+    },
+    {
+      "name": "松下电饭煲SR-HK151",
+      "price": 1599.0,
+      "stock": 40
+    },
+    {
+      "name": "德龙全自动咖啡机ECAM23",
+      "price": 4280.0,
+      "stock": 8
+    },
+    {
+      "name": "戴尔U2723QE显示器",
+      "price": 4599.0,
+      "stock": 25
+    },
+    {
+      "name": "安踏运动鞋C37",
+      "price": 499.0,
+      "stock": 200
+    },
+    {
+      "name": "海蓝之谜精华面霜60ml",
+      "price": 2680.0,
+      "stock": 35
+    },
+    {
+      "name": "科颜氏白泥面膜125ml",
+      "price": 315.0,
+      "stock": 150
+    },
+    {
+      "name": "Chanel No.5 香水100ml",
+      "price": 1200.0,
+      "stock": 28
+    },
+    {
+      "name": "三只松鼠坚果礼盒1888g",
+      "price": 168.0,
+      "stock": 300
+    },
+    {
+      "name": "飞鹤星飞帆奶粉3段900g",
+      "price": 358.0,
+      "stock": 95
+    },
+    {
+      "name": "农夫山泉天然水550ml×24瓶",
+      "price": 35.9,
+      "stock": 500
+    }
+  ]
+}
