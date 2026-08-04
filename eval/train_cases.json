@@ -242,13 +242,6 @@
     "expected_tools": []
   },
   {
-    "id": "TC-035",
-    "category": "物流",
-    "message": "YT3300448855显示7月24号就在转运中心了，到现在8月3号了还没出来，到底怎么回事",
-    "expected_action": "escalate",
-    "expected_tools": []
-  },
-  {
     "id": "TC-036",
     "category": "售后",
     "message": "ORD-1014这个白泥面膜我不想要了，帮我申请退款",
@@ -360,21 +353,21 @@
     ]
   },
   {
-    "id": "TC-052",
+    "id": "TC-051",
     "category": "物流",
-    "message": "SF9900112233什么时候能送到，我后天要出差",
+    "message": "JD9988005544动了没有，查一下",
     "expected_action": "auto",
     "expected_tools": [
       "query_logistics"
     ]
   },
   {
-    "id": "TC-053",
-    "category": "订单",
-    "message": "ORD-1030大疆Pocket 3给我备注一下：送货前半小时打电话",
+    "id": "TC-052",
+    "category": "物流",
+    "message": "SF9900112233什么时候能送到，我后天要出差",
     "expected_action": "auto",
     "expected_tools": [
-      "update_remark"
+      "query_logistics"
     ]
   },
   {
@@ -394,6 +387,14 @@
     "expected_tools": []
   },
   {
+    "id": "TC-056",
+    "category": "物流",
+    "message": "刚接到电话说我的快递丢了要核实信息，ORD-1011的，这怎么回事",
+    "expected_action": "escalate",
+    "expected_tools": [],
+    "note": "用户问快递丢失，核心诉求是物流相关，分类改为物流"
+  },
+  {
     "id": "TC-H1",
     "category": "订单",
     "message": "我上次查的那个订单发货了没",
@@ -407,7 +408,7 @@
         "resolution": "订单 ORD-1015 状态为待发货"
       }
     ],
-    "note": "校准：问订单发货状态，查订单即可（原误标物流）"
+    "note": "history 上下文：用户上次查过 ORD-1015，现在追问订单状态"
   },
   {
     "id": "TC-H2",
@@ -423,7 +424,7 @@
         "resolution": "订单 ORD-1020 换货申请已提交"
       }
     ],
-    "note": "校准：换货申请属售后（原误标订单）"
+    "note": "history 上下文：之前提过 ORD-1020 换货，追问进度归售后"
   },
   {
     "id": "TC-H3",

@@ -397,21 +397,21 @@
   },
   {
     "id": "TC-H1",
-    "category": "物流",
+    "category": "订单",
     "message": "我上次查的那个订单发货了没",
     "expected_action": "auto",
-    "expected_tools": ["query_logistics"],
+    "expected_tools": ["query_order"],
     "history": [{"category": "订单", "resolution": "订单 ORD-1015 状态为待发货"}],
-    "note": "history 上下文：用户上次查过 ORD-1015，现在追问物流"
+    "note": "history 上下文：用户上次查过 ORD-1015，现在追问订单状态"
   },
   {
     "id": "TC-H2",
-    "category": "订单",
+    "category": "售后",
     "message": "我的换货申请现在什么状态",
     "expected_action": "auto",
     "expected_tools": ["query_order"],
     "history": [{"category": "售后", "resolution": "订单 ORD-1020 换货申请已提交"}],
-    "note": "history 上下文：用户之前提过 ORD-1020 换货，现在追问进度"
+    "note": "history 上下文：之前提过 ORD-1020 换货，追问进度归售后"
   },
   {
     "id": "TC-H3",

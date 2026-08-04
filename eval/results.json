@@ -1,29 +1,29 @@
 {
-  "total": 47,
-  "auto_expected": 34,
-  "escalate_expected": 13,
-  "auto_success_count": 34,
-  "escalate_actual_count": 13,
-  "escalate_rate": "27.7%",
+  "total": 59,
+  "auto_expected": 41,
+  "escalate_expected": 18,
+  "auto_success_count": 41,
+  "escalate_actual_count": 18,
+  "escalate_rate": "30.5%",
   "category_accuracy": "100.0%",
   "action_accuracy": "100.0%",
   "auto_success_rate": "100.0%",
   "tools_accuracy": "100.0%",
   "by_category": {
     "售后": {
-      "total": 13,
+      "total": 16,
       "category_accuracy": "100.0%",
       "action_accuracy": "100.0%",
       "auto_success_rate": "100.0%"
     },
     "物流": {
-      "total": 19,
+      "total": 22,
       "category_accuracy": "100.0%",
       "action_accuracy": "100.0%",
       "auto_success_rate": "100.0%"
     },
     "订单": {
-      "total": 15,
+      "total": 21,
       "category_accuracy": "100.0%",
       "action_accuracy": "100.0%",
       "auto_success_rate": "100.0%"
@@ -31,5 +31,5 @@
   },
   "failed_count": 0,
   "failed_cases": [],
-  "elapsed_seconds": 589.9
+  "elapsed_seconds": 831.0
 }
