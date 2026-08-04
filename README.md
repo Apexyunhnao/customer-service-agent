@@ -91,12 +91,12 @@ python eval/run_eval.py
 | 6 | +数据对齐+规则归位 | 100.0% | 100.0% | 0 |
 | 7 | +留出集+运行时重试+history+硬校验 | train 95.5% | train 100% | 2* |
 
-**留出集验收（模型未见过的 12 条用例）**：分类 100% / 行动 100% / 工具覆盖率 100% / 自动处理成功率 100%。
+**留出集验收（当前切分下未参与开发调试的 12 条用例）**：分类 100% / 行动 100% / 工具覆盖率 100% / 自动处理成功率 100%。
 
-*注 1：train 2 条失败为分类争议（退差价归订单/售后、快递丢归订单/物流），行动均正确转人工。
+*注 1：train 2 条失败为分类争议（退差价归订单/售后、快递丢归订单/物流），行动均正确转人工；第 8-9 轮整改后已全部校准，当前 --all 59 条全 100%、0 失败。
 *注 2：工具覆盖率只在 auto 用例统计，escalate 用例不评判工具调用（tools_ok 为空，不计入分母）。
 
-最新评估结果详见 [eval/results.json](eval/results.json)（留出集）和 [eval/train_cases.json](eval/train_cases.json)。
+最新评估结果详见 [eval/results.json](eval/results.json)（--all 全量 59 条），留出集（holdout）结果见 [docs/development-log.md](docs/development-log.md) 第 7 轮。
 
 ## 技术栈
 
