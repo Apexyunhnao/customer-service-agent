@@ -100,7 +100,7 @@ for idx, tc in enumerate(test_cases):
         "resolution": "",
         "status": "新建",
         "escalate_reason": "",
-        "history": [],
+        "history": tc.get("history", []),
     }
 
     try:

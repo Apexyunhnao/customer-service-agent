@@ -394,5 +394,32 @@
     "expected_action": "escalate",
     "expected_tools": [],
     "note": "用户问快递丢失，核心诉求是物流相关，分类改为物流"
+  },
+  {
+    "id": "TC-H1",
+    "category": "物流",
+    "message": "我上次查的那个订单发货了没",
+    "expected_action": "auto",
+    "expected_tools": ["query_logistics"],
+    "history": [{"category": "订单", "resolution": "订单 ORD-1015 状态为待发货"}],
+    "note": "history 上下文：用户上次查过 ORD-1015，现在追问物流"
+  },
+  {
+    "id": "TC-H2",
+    "category": "订单",
+    "message": "我的换货申请现在什么状态",
+    "expected_action": "auto",
+    "expected_tools": ["query_order"],
+    "history": [{"category": "售后", "resolution": "订单 ORD-1020 换货申请已提交"}],
+    "note": "history 上下文：用户之前提过 ORD-1020 换货，现在追问进度"
+  },
+  {
+    "id": "TC-H3",
+    "category": "物流",
+    "message": "那个快递还在异常吗，能处理一下吗",
+    "expected_action": "escalate",
+    "expected_tools": [],
+    "history": [{"category": "物流", "resolution": "运单 SF1155993377 物流异常"}],
+    "note": "history 上下文：之前物流异常，用户追问+要求处理→转人工"
   }
 ]

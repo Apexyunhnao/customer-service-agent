@@ -109,13 +109,13 @@ def get_user_history(user_identifier: str, limit: int = 5) -> list[dict]:
     """查询用户的历史工单摘要，按时间倒序返回最近 N 条。
 
     Args:
-        user_identifier: 用户标识（手机号或姓名），支持模糊匹配
+        user_identifier: 用户标识（手机号或姓名），长度需 ≥4 才查询（避免短串模糊匹配捞出一堆）
         limit: 返回条数上限，默认 5
 
     Returns:
         历史工单列表，每项 {ticket_id, category, status, resolution, created_at}
     """
-    if not user_identifier:
+    if not user_identifier or len(user_identifier) < 4:
         return []
 
     conn = _get_conn()
