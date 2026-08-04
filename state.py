@@ -30,5 +30,6 @@ class TicketState(TypedDict, total=False):
     resolution: str
     status: str
     escalate_reason: str
+    user_identifier: str  # 用户标识（手机号等），用于关联历史
     history: list[str]
     _timings: dict[str, int]  # 节点名 → 毫秒

@@ -27,11 +27,42 @@ from tools import (
     process_exchange,
 )
 
+# ── LLM 调用重试（指数退避，网络/超时/5xx 自动重试）────────────
+
+_LLM_MAX_RETRIES = 3
+_LLM_RETRY_BASE = 2  # 秒：2, 4, 8
+
+
+def _is_retryable(error: Exception) -> bool:
+    """判断 LLM 异常是否可重试：连接错误、超时、5xx。"""
+    msg = str(error).lower()
+    patterns = [
+        "connection", "timeout", "timed out", "server error",
+        "500", "502", "503", "504", "rate limit", "too many requests",
+        "remote disconnect", "reset by peer", "service unavailable",
+    ]
+    return any(p in msg for p in patterns)
+
+
+def _llm_invoke_with_retry(llm: ChatOpenAI, messages: list, **kwargs: Any) -> Any:
+    """调用 LLM，遇可重试异常自动重试（最多 3 次，指数退避）。"""
+    last_error = None
+    for attempt in range(1, _LLM_MAX_RETRIES + 1):
+        try:
+            return llm.invoke(messages, **kwargs)
+        except Exception as e:
+            last_error = e
+            if attempt < _LLM_MAX_RETRIES and _is_retryable(e):
+                delay = _LLM_RETRY_BASE ** attempt
+                time.sleep(delay)
+            else:
+                break
+    raise last_error  # type: ignore[misc]
+
+
 # ── LLM 实例（延迟初始化）────────────────────────────────────────
 
 _LLM: ChatOpenAI | None = None
-
-
 _llm_call_count = 0  # 当前工单的 LLM 调用次数，graph 开始时重置
 
 
@@ -270,7 +301,7 @@ def classify_node(state: TicketState) -> dict[str, Any]:
     )
 
     llm = _get_llm()
-    reply = llm.invoke(
+    reply = _llm_invoke_with_retry(llm,
         [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)],
         response_format={"type": "json_object"},
     )
@@ -279,10 +310,11 @@ def classify_node(state: TicketState) -> dict[str, Any]:
     try:
         parsed = _parse_json_from_response(str(raw))
     except json.JSONDecodeError:
-        # 解析失败降级：返回空值，由后续节点转人工
+        # 解析失败：category 留空，decide_node 检测到空分类直接转人工
         return {
-            "category": "售后",
+            "category": "",
             "extracted_info": {"order_id": None, "tracking_no": None, "amount": None},
+            "escalate_reason": "意图分类解析失败",
             **_timing(state, "classify", t0),
         }
 
@@ -327,7 +359,7 @@ def handle_node(state: TicketState) -> dict[str, Any]:
     )
 
     llm = _get_llm()
-    reply = llm.invoke(
+    reply = _llm_invoke_with_retry(llm,
         [HumanMessage(content=prompt)],
         response_format={"type": "json_object"},
     )
@@ -340,10 +372,69 @@ def handle_node(state: TicketState) -> dict[str, Any]:
 
     tools_to_call: list[dict] = selection.get("tools", [])
 
+    # ── 先查后写硬校验：写操作前必须已成功执行对应查询 ──────────
+    _WRITE_TOOLS = {
+        "update_address", "refund_price_diff", "update_remark",
+        "process_refund", "process_exchange",
+    }
+    _LOGISTICS_WRITE_TOOLS = {"urge_delivery"}
+
+    def _ensure_query(
+        tool_name: str, tool_results_so_far: list[dict]
+    ) -> list[dict]:
+        """确保写操作前已执行对应查询。未查到则自动执行，失败则标记 escalate。"""
+        if tool_name in _WRITE_TOOLS:
+            needed = "query_order"
+        elif tool_name in _LOGISTICS_WRITE_TOOLS:
+            needed = "query_logistics"
+        else:
+            return tool_results_so_far  # 查询类工具无需检查
+
+        # 已执行过成功的对应查询则放行
+        for tr in tool_results_so_far:
+            if tr.get("tool_name") == needed and tr.get("success"):
+                return tool_results_so_far
+
+        # 自动执行查询
+        query_func = _TOOL_MAP[needed]
+        order_id = extracted.get("order_id") or ""
+        tracking_no = extracted.get("tracking_no") or ""
+        keyword = order_id or tracking_no
+
+        if not keyword:
+            tool_results_so_far.append({
+                "tool_name": needed,
+                "success": False,
+                "message": f"写操作 {tool_name} 需要先查询，但未提取到订单号/运单号",
+                "data": {},
+            })
+            return tool_results_so_far
+
+        try:
+            qr = query_func(keyword)
+        except Exception as e:
+            qr = {"success": False, "message": f"自动查询异常：{e}", "data": {}}
+
+        qr["tool_name"] = needed
+        qr["arguments"] = {"keyword": keyword, "_auto": True}
+        tool_results_so_far.append(qr)
+
+        if not qr.get("success"):
+            return tool_results_so_far  # 查询失败，后续写操作由工具自身拒绝
+
+        return tool_results_so_far
+
     tool_results: list[dict[str, Any]] = []
     for item in tools_to_call:
         tool_name = item.get("tool_name", "")
         arguments = item.get("arguments", {})
+
+        # 硬校验：写前先查
+        tool_results = _ensure_query(tool_name, tool_results)
+        if tool_results and not tool_results[-1].get("success") and tool_results[-1].get("tool_name") in ("query_order", "query_logistics"):
+            # 自动查询失败 -> 跳过当前写操作，已记录失败
+            pass
+
         func = _TOOL_MAP.get(tool_name)
 
         if func is None:
@@ -375,12 +466,32 @@ def decide_node(state: TicketState) -> dict[str, Any]:
     """决策节点——风险检测 + 工具结果判断，纯规则不调 LLM。
 
     优先级：
-    1. 风险信号命中 → 强制 escalate
-    2. 工具全部 success=true → auto
-    3. 任一工具失败或未调用 → escalate
+    0. 分类为空 → 强制 escalate（分类失败）
+    1. escalate_reason 已有 → 强制 escalate（classify 解析失败等）
+    2. 风险信号命中 → 强制 escalate
+    3. 工具全部 success=true → auto
+    4. 任一工具失败或未调用 → escalate
     """
     t0 = time.time()
     tool_results = state.get("tool_results", [])
+
+    # 0. 分类为空 → 直接转人工
+    if not state.get("category", ""):
+        return {
+            "status": "已关闭",
+            "escalate_reason": state.get("escalate_reason", "") or "意图分类失败",
+            "resolution": "",
+            **_timing(state, "decide", t0),
+        }
+
+    # 1. 已有 escalate_reason → 转人工
+    if state.get("escalate_reason", ""):
+        return {
+            "status": "已关闭",
+            "escalate_reason": state["escalate_reason"],
+            "resolution": "",
+            **_timing(state, "decide", t0),
+        }
 
     # 最高优先：风险信号检测
     risks = _detect_risks(state)
@@ -430,7 +541,7 @@ def reply_auto_node(state: TicketState) -> dict[str, Any]:
     )
 
     llm = _get_llm()
-    reply = llm.invoke([HumanMessage(content=prompt)])
+    reply = _llm_invoke_with_retry(llm,[HumanMessage(content=prompt)])
     resolution = reply.content if hasattr(reply, "content") else str(reply)
 
     return {"status": "已解决", "resolution": str(resolution), **_timing(state, "reply_auto", t0)}

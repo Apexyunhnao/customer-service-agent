@@ -45,6 +45,7 @@ for i, tc in enumerate(demo_cases, 1):
     state = {
         "ticket_id": ticket_id,
         "user_message": tc["message"],
+        "user_identifier": "13800138001",
         "category": "",
         "extracted_info": {},
         "tool_results": [],

@@ -27,9 +27,25 @@ from db import create_ticket
 
 # ── 加载用例 ────────────────────────────────────────────────────
 
-TEST_CASES_PATH = Path(__file__).parent / "test_cases.json"
-with open(TEST_CASES_PATH, "r", encoding="utf-8") as f:
+CASE_SET = "train"  # 默认只跑训练集
+for i, arg in enumerate(sys.argv):
+    if arg == "--cases" and i + 1 < len(sys.argv):
+        CASE_SET = sys.argv[i + 1]
+    elif arg == "--holdout":
+        CASE_SET = "holdout"
+    elif arg == "--all":
+        CASE_SET = "all"
+
+CASE_FILES = {
+    "train": Path(__file__).parent / "train_cases.json",
+    "holdout": Path(__file__).parent / "holdout_cases.json",
+    "all": Path(__file__).parent / "test_cases.json",
+}
+test_path = CASE_FILES.get(CASE_SET, CASE_FILES["train"])
+with open(test_path, "r", encoding="utf-8") as f:
     test_cases = json.load(f)
+
+print(f"用例集: {CASE_SET} ({len(test_cases)} 条)")
 
 # ── 评估逻辑 ────────────────────────────────────────────────────
 

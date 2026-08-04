@@ -30,6 +30,7 @@ app = FastAPI(title="客服工单处理 Agent")
 
 class TicketRequest(BaseModel):
     message: str
+    user_identifier: str = ""  # 可选，用户手机号或标识
 
 
 class TicketResponse(BaseModel):
@@ -47,16 +48,20 @@ def handle_ticket(req: TicketRequest) -> TicketResponse:
     """接收用户消息，跑完整流水线，返回处理结果。"""
     ticket_id = f"API-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}"
 
+    from db import get_user_history
+    history = get_user_history(req.user_identifier) if req.user_identifier else []
+
     state = {
         "ticket_id": ticket_id,
         "user_message": req.message,
+        "user_identifier": req.user_identifier,
         "category": "",
         "extracted_info": {},
         "tool_results": [],
         "resolution": "",
         "status": "新建",
         "escalate_reason": "",
-        "history": [],
+        "history": history,
     }
 
     result = run_ticket(state)
