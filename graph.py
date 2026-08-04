@@ -19,6 +19,7 @@ from nodes import (
     escalate_node,
     reset_llm_counter,
     get_llm_call_count,
+    get_llm_retries,
 )
 from logger import log_ticket
 
@@ -65,5 +66,6 @@ def run_ticket(state: dict[str, Any]) -> dict[str, Any]:
     reset_llm_counter()
     result = _graph.invoke(state)
     llm_calls = get_llm_call_count()
-    log_ticket(result, {"llm_calls": llm_calls, "retries": 0})
+    retries = get_llm_retries()
+    log_ticket(result, {"llm_calls": llm_calls, "retries": retries})
     return result

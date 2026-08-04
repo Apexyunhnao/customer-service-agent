@@ -31,6 +31,7 @@ from tools import (
 
 _LLM_MAX_RETRIES = 3
 _LLM_RETRY_BASE = 2  # 秒：2, 4, 8
+_llm_total_retries = 0  # 当前工单的 LLM 重试总次数
 
 
 def _is_retryable(error: Exception) -> bool:
@@ -45,18 +46,24 @@ def _is_retryable(error: Exception) -> bool:
 
 
 def _llm_invoke_with_retry(llm: ChatOpenAI, messages: list, **kwargs: Any) -> Any:
-    """调用 LLM，遇可重试异常自动重试（最多 3 次，指数退避）。"""
+    """调用 LLM，遇可重试异常自动重试。返回 (response, retry_count)。"""
+    global _llm_total_retries
+    retries = 0
     last_error = None
     for attempt in range(1, _LLM_MAX_RETRIES + 1):
         try:
-            return llm.invoke(messages, **kwargs)
+            response = llm.invoke(messages, **kwargs)
+            _llm_total_retries += retries
+            return response
         except Exception as e:
             last_error = e
             if attempt < _LLM_MAX_RETRIES and _is_retryable(e):
+                retries += 1
                 delay = _LLM_RETRY_BASE ** attempt
                 time.sleep(delay)
             else:
                 break
+    _llm_total_retries += retries
     raise last_error  # type: ignore[misc]
 
 
@@ -84,14 +91,20 @@ def _get_llm() -> ChatOpenAI:
 
 
 def reset_llm_counter() -> None:
-    """重置 LLM 调用计数器（每张新工单开始时调用）。"""
-    global _llm_call_count
+    """重置 LLM 调用和重试计数器（每张新工单开始时调用）。"""
+    global _llm_call_count, _llm_total_retries
     _llm_call_count = 0
+    _llm_total_retries = 0
 
 
 def get_llm_call_count() -> int:
     """获取当前工单的 LLM 调用次数。"""
     return _llm_call_count
+
+
+def get_llm_retries() -> int:
+    """获取当前工单的 LLM 重试总次数。"""
+    return _llm_total_retries
 
 
 def _timing(state: dict, node_name: str, start: float) -> dict:
@@ -318,8 +331,17 @@ def classify_node(state: TicketState) -> dict[str, Any]:
             **_timing(state, "classify", t0),
         }
 
+    category = parsed.get("category", "")
+    if category not in ("订单", "物流", "售后"):
+        return {
+            "category": "",
+            "extracted_info": {"order_id": None, "tracking_no": None, "amount": None},
+            "escalate_reason": "意图分类非法",
+            **_timing(state, "classify", t0),
+        }
+
     return {
-        "category": parsed.get("category", "售后"),
+        "category": category,
         "extracted_info": {
             "order_id": parsed.get("order_id"),
             "tracking_no": parsed.get("tracking_no"),
@@ -432,8 +454,15 @@ def handle_node(state: TicketState) -> dict[str, Any]:
         # 硬校验：写前先查
         tool_results = _ensure_query(tool_name, tool_results)
         if tool_results and not tool_results[-1].get("success") and tool_results[-1].get("tool_name") in ("query_order", "query_logistics"):
-            # 自动查询失败 -> 跳过当前写操作，已记录失败
-            pass
+            # 自动查询失败 → 跳过当前写操作
+            tool_results.append({
+                "tool_name": tool_name,
+                "success": False,
+                "message": "前置查询失败，已跳过",
+                "data": {},
+                "arguments": arguments,
+            })
+            continue
 
         func = _TOOL_MAP.get(tool_name)
 

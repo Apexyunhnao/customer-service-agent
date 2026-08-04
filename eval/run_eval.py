@@ -23,7 +23,6 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from graph import run_ticket
-from db import create_ticket
 
 # ── 加载用例 ────────────────────────────────────────────────────
 
@@ -377,7 +376,7 @@ if failed_cases:
         analysis_items[-1] += "\n".join(suggestions) if suggestions else "- 需人工复查具体上下文"
         analysis_items[-1] += "\n"
 
-DEFAULT_ANALYSIS = "## 无失败用例" + chr(10) + chr(10) + "所有 56 条用例全部通过，无需分析。"
+DEFAULT_ANALYSIS = ""  # 运行时动态生成，见下文
 
 analysis_md = f"""# 评估失败分析
 
@@ -392,7 +391,7 @@ analysis_md = f"""# 评估失败分析
 
 ---
 
-{chr(10).join(analysis_items) if analysis_items else DEFAULT_ANALYSIS}
+{chr(10).join(analysis_items) if analysis_items else ("## 无失败用例" + chr(10) + chr(10) + "所有 " + str(total) + " 条用例全部通过，无需分析。")}
 
 ## 总结
 
@@ -407,7 +406,7 @@ if failed_cases:
     analysis_md += f"- 行动错误 {action_fail_count} 条 → 重点排查 decide_node 的边界逻辑和敏感词检测\n"
     analysis_md += f"- 工具偏差 {tools_fail_count} 条 → 细化 handle_node 中的工具选择指引\n"
 else:
-    analysis_md += "全部通过。\n"
+    analysis_md += str(total) + " 条用例全部通过。\n"
 
 ANALYSIS_PATH = Path(__file__).parent / "failure_analysis.md"
 with open(ANALYSIS_PATH, "w", encoding="utf-8") as f:

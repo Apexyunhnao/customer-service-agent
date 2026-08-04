@@ -48,7 +48,7 @@ def handle_ticket(req: TicketRequest) -> TicketResponse:
     """接收用户消息，跑完整流水线，返回处理结果。"""
     ticket_id = f"API-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}"
 
-    from db import get_user_history
+    from db import get_user_history, create_ticket
     history = get_user_history(req.user_identifier) if req.user_identifier else []
 
     state = {
@@ -65,6 +65,17 @@ def handle_ticket(req: TicketRequest) -> TicketResponse:
     }
 
     result = run_ticket(state)
+
+    # 工单落库
+    create_ticket(
+        ticket_id=ticket_id,
+        user_message=req.message,
+        user_identifier=req.user_identifier,
+        category=result.get("category", ""),
+        status=result.get("status", "已关闭"),
+        resolution=result.get("resolution", ""),
+        escalate_reason=result.get("escalate_reason", ""),
+    )
 
     return TicketResponse(
         ticket_id=ticket_id,
