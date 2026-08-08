@@ -86,6 +86,12 @@ def handle_ticket(req: TicketRequest) -> TicketResponse:
     )
 
 
+@app.get("/health")
+def health() -> dict:
+    """健康检查。"""
+    return {"healthy": True, "service": "customer-service-agent"}
+
+
 # ── Web 页面 ────────────────────────────────────────────────────
 
 HTML_PAGE = """<!DOCTYPE html>
