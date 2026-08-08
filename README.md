@@ -1,118 +1,71 @@
 # 客服工单处理 Agent
 
-基于 LangGraph + DeepSeek 的智能客服工单处理系统，自动分类、执行、回复常见工单类型，复杂情况自动转人工。
+## 功能
 
-## 架构
+基于 LangGraph 的客服工单自动处理系统。接收用户消息 → 意图分类（订单/物流/售后）→ 调用对应工具 → 自动处理或转人工。8 个工具覆盖完整售后链路，安全边界写死在工具层。
 
-```
-用户消息 → classify（意图分类）→ handle（工具调用）→ decide（决策）
-                                                      ├─ auto → reply_auto（生成回复）
-                                                      └─ escalate → escalate（转人工）
-```
+**业务数据**：SQLite 数据库，20 客户 + 30 订单 + 30 物流记录
+**虚实结合**：地址修改和备注是真 SQL 写入，资金相关操作保留 mock 安全边界
 
-## 目录结构
+## 技术栈
 
-```
-.
-├── main.py              # FastAPI 服务入口（POST /api/ticket, GET /）
-├── graph.py             # LangGraph 状态图 + run_ticket 封装
-├── nodes.py             # 5 个节点函数 + 风险信号检测
-├── tools.py             # 8 个工具函数（安全边界写死）
-├── state.py             # TypedDict 状态定义
-├── db.py                # SQLite 工单存储
-├── logger.py            # 结构化 JSON 日志
-├── demo.py              # Demo 脚本（前 3 条测试用例）
-├── eval/
-│   ├── test_cases.json  # 56 条标注测试集
-│   ├── run_eval.py      # 评估脚本（含重试）
-│   ├── results.json     # 最新评估结果
-│   └── failure_analysis.md
-├── data/
-│   ├── mock_db.json     # Mock 数据（30 条订单 + 物流 + 客户）
-│   └── tickets.db       # SQLite 工单记录
-├── docs/
-│   ├── requirements.md  # 需求文档
-│   ├── tech_selection.md# 技术选型文档
-│   └── development-log.md
-├── logs/
-│   └── agent.log        # 结构化日志（每单一条 JSON）
-├── requirements.txt
-└── .env                 # DEEPSEEK_API_KEY=your-key
-```
+- LangGraph（状态图：classify→handle→decide→auto/escalate→reply）
+- DeepSeek（意图分类 + 信息提取）
+- SQLite（业务数据库，外键约束，参数化查询）
+- FastAPI（HTTP 接口）
 
-## 快速开始
+## 启动
 
 ```bash
-# 1. 安装依赖
 pip install -r requirements.txt
+python data/migrate_to_sqlite.py    # 首次：创建 SQLite 库
+uvicorn main:app --port 8001        # 启动服务
+```
 
-# 2. 配置 API Key
-echo "DEEPSEEK_API_KEY=your-key" > .env
-
-# 3. 跑 Demo（前 3 条测试用例）
-python demo.py
-
-# 4. 启动 API 服务
-uvicorn main:app --host 127.0.0.1 --port 8001
-
-# 5. 跑完整评估
-python eval/run_eval.py
+或 Docker：
+```bash
+docker build -t ticket-agent .
+docker run -p 8001:8001 --env-file .env ticket-agent
 ```
 
 ## API
 
-**POST /api/ticket**
-
+POST /api/ticket
 ```json
-// 请求
-{"message": "帮我查一下ORD-1003的订单状态"}
-
-// 响应
-{
-  "ticket_id": "API-20260804-abc123",
-  "category": "订单",
-  "status": "已解决",
-  "resolution": "您好！已为您查到订单 ORD-1003 的最新情况...",
-  "escalate_reason": ""
-}
+{"message": "帮我查一下ORD-1003的订单状态", "user_identifier": ""}
+→ {"ticket_id": "...", "category": "订单", "status": "已解决", "resolution": "..."}
 ```
 
-## 评估结果
+## 工具列表
 
-56 条标注测试集按 8:2 切分：44 条训练集（开发迭代用）+ 12 条留出集（holdout，最终验收用）。
+| 工具 | 功能 | 写操作 |
+|------|------|--------|
+| query_order | 查询订单状态 | 读 |
+| query_logistics | 查询物流轨迹 | 读 |
+| update_address | 修改收货地址 | ✅ SQL UPDATE |
+| update_remark | 添加订单备注 | ✅ SQL INSERT |
+| refund_price_diff | 退差价（限额 ¥500） | mock |
+| process_refund | 处理退款（限额 ¥1000） | mock |
+| urge_delivery | 催派送 | mock |
+| process_exchange | 处理换货 | mock |
 
-| 轮次 | 改动 | 分类准确率 | 行动准确率 | 失败数 |
-|------|------|-----------|-----------|--------|
-| 1 | 初版 | 69.6% | 73.2% | 27 |
-| 2 | +标注修正+重试 | 96.4% | 82.1% | 22 |
-| 3 | +风险检测+先查后写 | 98.2% | 87.5% | 8 |
-| 4 | +防诈骗+物流细化 | 98.2% | 92.9% | 5 |
-| 5 | +停滞检测 | 98.2% | 89.3% | 7 |
-| 6 | +数据对齐+规则归位 | 100.0% | 100.0% | 0 |
-| 7 | +留出集+运行时重试+history+硬校验 | train 95.5% | train 100% | 2* |
+## 安全边界（三级防护）
 
-**留出集验收（当前切分下未参与开发调试的 12 条用例）**：分类 100% / 行动 100% / 工具覆盖率 100% / 自动处理成功率 100%。
+1. 工具层硬边界：金额限额写死在函数（`if amount > 1000: return success=False`），LLM 无法绕过
+2. 确定性风险规则：投诉词、已取消/已签收状态用代码检测，不靠 LLM 判断
+3. 人工兜底：解析失败、信息不足 → 转人工
 
-*注 1：train 2 条失败为分类争议（退差价归订单/售后、快递丢归订单/物流），行动均正确转人工；第 8-9 轮整改后已全部校准，当前 --all 59 条全 100%、0 失败。
-*注 2：工具覆盖率只在 auto 用例统计，escalate 用例不评判工具调用（tools_ok 为空，不计入分母）。
+## 评估
 
-最新评估结果详见 [eval/results.json](eval/results.json)（--all 全量 59 条），留出集（holdout）结果见 [docs/development-log.md](docs/development-log.md) 第 7 轮。
+| 指标 | 全量（59条） | 留出集（12条） |
+|------|------------|---------------|
+| 分类准确率 | 100% | 100% |
+| 行动准确率 | 96.6% | 100% |
+| 自动处理成功率 | 92.0% | — |
 
-## 技术栈
+## 已知限制
 
-| 层面 | 选型 |
-|------|------|
-| Agent 编排 | LangGraph (StateGraph) |
-| LLM | DeepSeek v4-pro（OpenAI 兼容接口） |
-| Web 框架 | FastAPI + uvicorn |
-| 数据存储 | SQLite |
-| 日志 | Python logging + JSON 格式 |
-| 环境管理 | python-dotenv |
-
-选型理由详见 [docs/tech_selection.md](docs/tech_selection.md)。
-
-## 文档
-
-- [需求文档](docs/requirements.md)
-- [技术选型](docs/tech_selection.md)
-- [开发日志](docs/development-log.md)
+- 3 条失败案例全部是 LLM 工具选择偏差（退差价金额提取、历史推理），与数据库无关
+- 资金操作保持 mock（安全设计，非遗漏）
+- 无并发处理、无用户认证
+- 订单/物流/客户数据为模拟数据

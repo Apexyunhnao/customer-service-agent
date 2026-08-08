@@ -83,7 +83,7 @@ def _get_llm() -> ChatOpenAI:
             raise RuntimeError("未设置 DEEPSEEK_API_KEY 环境变量，无法调用 DeepSeek API")
         _LLM = ChatOpenAI(
             base_url="https://api.deepseek.com",
-            model="deepseek-v4-pro",
+            model="deepseek-chat",
             api_key=api_key,
             temperature=0.1,
         )

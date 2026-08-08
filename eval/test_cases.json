@@ -4,105 +4,141 @@
     "category": "订单",
     "message": "帮我查一下ORD-1003的订单状态",
     "expected_action": "auto",
-    "expected_tools": ["query_order"]
+    "expected_tools": [
+      "query_order"
+    ]
   },
   {
     "id": "TC-002",
     "category": "物流",
     "message": "我的单子ORD-1002到哪了，什么时候能收货",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(>3天)，应转人工"
   },
   {
     "id": "TC-003",
     "category": "物流",
     "message": "你好，帮我看看ORD-1007发出来了没有",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(>3天)，应转人工"
   },
   {
     "id": "TC-004",
     "category": "订单",
     "message": "ORD-1001这个订单现在什么情况",
     "expected_action": "auto",
-    "expected_tools": ["query_order"]
+    "expected_tools": [
+      "query_order"
+    ]
   },
   {
     "id": "TC-005",
     "category": "订单",
     "message": "麻烦查下ORD-1009，我前天下的单怎么还没动静",
-    "expected_action": "auto",
-    "expected_tools": ["query_order"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_order"
+    ],
+    "note": "ORD-1009物流停滞(>3天)，应转人工"
   },
   {
     "id": "TC-006",
     "category": "订单",
     "message": "ORD-1003的收货地址给我改成这个：上海市徐汇区漕溪北路595号",
     "expected_action": "auto",
-    "expected_tools": ["update_address"]
+    "expected_tools": [
+      "update_address"
+    ]
   },
   {
     "id": "TC-007",
     "category": "订单",
     "message": "我搬家了，订单ORD-1012要换个地址，改成广州市番禺区南村镇万博二路88号",
     "expected_action": "auto",
-    "expected_tools": ["update_address"]
+    "expected_tools": [
+      "update_address"
+    ]
   },
   {
     "id": "TC-008",
     "category": "订单",
     "message": "帮我改下ORD-1022的收货地址，我写错了，应该是原来的公司地址：上海市浦东新区张杨路500号",
     "expected_action": "auto",
-    "expected_tools": ["update_address"]
+    "expected_tools": [
+      "update_address"
+    ]
   },
   {
     "id": "TC-009",
     "category": "订单",
     "message": "地址写错了还没发货能改吗，单号ORD-1027，新地址深圳市宝安区西乡大道123号",
     "expected_action": "auto",
-    "expected_tools": ["update_address"]
+    "expected_tools": [
+      "update_address"
+    ]
   },
   {
     "id": "TC-010",
     "category": "订单",
     "message": "ORD-1005收货地址改一下，送到北京市海淀区中关村南大街5号院就行",
     "expected_action": "auto",
-    "expected_tools": ["update_address"]
+    "expected_tools": [
+      "update_address"
+    ]
   },
   {
     "id": "TC-011",
     "category": "订单",
     "message": "我看到同款手机降价了，我买的ORD-1006能退差价吗，9号买的8999现在8499了",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "refund_price_diff"]
+    "expected_tools": [
+      "query_order",
+      "refund_price_diff"
+    ]
   },
   {
     "id": "TC-012",
     "category": "订单",
     "message": "我的大疆Pocket 3刚买两天就降价200，单号ORD-1018，能申请退差价不",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "refund_price_diff"]
+    "expected_tools": [
+      "query_order",
+      "refund_price_diff"
+    ]
   },
   {
     "id": "TC-013",
     "category": "订单",
     "message": "双十一都没到你们就降价了？我ORD-1024买的空气净化器2099了吗，差价退一下",
     "expected_action": "escalate",
-    "expected_tools": ["query_order", "refund_price_diff"]
+    "expected_tools": [
+      "query_order",
+      "refund_price_diff"
+    ]
   },
   {
     "id": "TC-014",
     "category": "订单",
     "message": "给订单ORD-1003加个备注：客户要求发货前电话确认",
     "expected_action": "auto",
-    "expected_tools": ["update_remark"]
+    "expected_tools": [
+      "update_remark"
+    ]
   },
   {
     "id": "TC-015",
     "category": "订单",
     "message": "ORD-1017帮我备注一下，周末不配送",
     "expected_action": "auto",
-    "expected_tools": ["update_remark"]
+    "expected_tools": [
+      "update_remark"
+    ]
   },
   {
     "id": "TC-016",
@@ -137,7 +173,10 @@
     "category": "订单",
     "message": "ORD-1010这个坚果礼盒我7月22号就收到了，现在发现别家便宜了100块，给我退差价",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "refund_price_diff"],
+    "expected_tools": [
+      "query_order",
+      "refund_price_diff"
+    ],
     "note": "差价100元未超500限额，价保期内允许退差价，改为auto"
   },
   {
@@ -145,77 +184,108 @@
     "category": "物流",
     "message": "我的快递到哪了，单号SF1234567890",
     "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_tools": [
+      "query_logistics"
+    ]
   },
   {
     "id": "TC-022",
     "category": "物流",
     "message": "SF5544332211这个件帮我查下物流信息",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-023",
     "category": "物流",
     "message": "JD9876543210到什么地方了，等了好几天了",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-024",
     "category": "物流",
     "message": "YT4455667788物流走到哪一步了",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-025",
     "category": "物流",
     "message": "帮我跟踪一下快递ZT5566778899，一直没收到",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-026",
     "category": "物流",
     "message": "查下物流SF3366998855，昨天开始就没更新了",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-027",
     "category": "物流",
     "message": "JD3344556677物流轨迹帮我看看",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-028",
     "category": "物流",
     "message": "运单号YT1133995577现在在哪",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-029",
     "category": "物流",
     "message": "JD9876543210这个件怎么这么慢，帮我催催快递",
-    "expected_action": "auto",
-    "expected_tools": ["urge_delivery"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "urge_delivery"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-030",
     "category": "物流",
     "message": "SF5544332211都三天了还没送到，能催一下吗",
-    "expected_action": "auto",
-    "expected_tools": ["urge_delivery"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "urge_delivery"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-031",
     "category": "物流",
     "message": "快递ZT5566778899显示异常是什么意思？包裹不会丢了吧",
     "expected_action": "escalate",
-    "expected_tools": ["query_logistics"],
+    "expected_tools": [
+      "query_logistics"
+    ],
     "note": "物流异常+用户焦虑（担心丢件），转人工合理"
   },
   {
@@ -223,7 +293,9 @@
     "category": "物流",
     "message": "YT4455667788状态怎么是异常，里面是送人的礼物不能耽误",
     "expected_action": "escalate",
-    "expected_tools": ["query_logistics"],
+    "expected_tools": [
+      "query_logistics"
+    ],
     "note": "物流异常+用户焦虑（礼物时效敏感），转人工合理"
   },
   {
@@ -252,56 +324,80 @@
     "category": "售后",
     "message": "ORD-1014这个白泥面膜我不想要了，帮我申请退款",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-037",
     "category": "售后",
     "message": "刚买的奶粉发现买错了，ORD-1028能退款吗",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-038",
     "category": "售后",
     "message": "ORD-1025的电动牙刷收到了但用着不太满意，想退掉",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-039",
     "category": "售后",
     "message": "我下单时没注意看，ORD-1003这个手表想退了重新买个别的颜色",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-040",
     "category": "售后",
     "message": "退掉ORD-1016这个电饭煲，家里人买重了",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-041",
     "category": "售后",
     "message": "买的戴尔显示器左下角有个亮点，ORD-1013申请换货",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_exchange"]
+    "expected_tools": [
+      "query_order",
+      "process_exchange"
+    ]
   },
   {
     "id": "TC-042",
     "category": "售后",
     "message": "ORD-1026这个Switch手柄漂移了，开箱就有问题，给我换个新的",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_exchange"]
+    "expected_tools": [
+      "query_order",
+      "process_exchange"
+    ]
   },
   {
     "id": "TC-043",
     "category": "售后",
     "message": "ORD-1019咖啡机收到发现水箱漏水，要换一台好的",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_exchange"]
+    "expected_tools": [
+      "query_order",
+      "process_exchange"
+    ]
   },
   {
     "id": "TC-044",
@@ -343,42 +439,59 @@
     "category": "售后",
     "message": "ORD-1004耳机用了两周感觉降噪没宣传的那么好，能退吗",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_refund"]
+    "expected_tools": [
+      "query_order",
+      "process_refund"
+    ]
   },
   {
     "id": "TC-050",
     "category": "售后",
     "message": "ORD-1020坚果礼盒包装破损了，里面的东西都碎了，要求换货",
     "expected_action": "auto",
-    "expected_tools": ["query_order", "process_exchange"]
+    "expected_tools": [
+      "query_order",
+      "process_exchange"
+    ]
   },
   {
     "id": "TC-051",
     "category": "物流",
     "message": "JD9988005544动了没有，查一下",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-052",
     "category": "物流",
     "message": "SF9900112233什么时候能送到，我后天要出差",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-053",
     "category": "订单",
     "message": "ORD-1030大疆Pocket 3给我备注一下：送货前半小时打电话",
     "expected_action": "auto",
-    "expected_tools": ["update_remark"]
+    "expected_tools": [
+      "update_remark"
+    ]
   },
   {
     "id": "TC-054",
     "category": "物流",
     "message": "ZT7722004488在哪了，帮忙看一眼",
-    "expected_action": "auto",
-    "expected_tools": ["query_logistics"]
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_logistics"
+    ],
+    "note": "物流停滞(updated >3天)，应转人工"
   },
   {
     "id": "TC-055",
@@ -399,18 +512,32 @@
     "id": "TC-H1",
     "category": "订单",
     "message": "我上次查的那个订单发货了没",
-    "expected_action": "auto",
-    "expected_tools": ["query_order"],
-    "history": [{"category": "订单", "resolution": "订单 ORD-1015 状态为待发货"}],
-    "note": "history 上下文：用户上次查过 ORD-1015，现在追问订单状态"
+    "expected_action": "escalate",
+    "expected_tools": [
+      "query_order"
+    ],
+    "history": [
+      {
+        "category": "订单",
+        "resolution": "订单 ORD-1015 状态为待发货"
+      }
+    ],
+    "note": "ORD-1015物流异常停滞(07-25)，应转人工"
   },
   {
     "id": "TC-H2",
     "category": "售后",
     "message": "我的换货申请现在什么状态",
     "expected_action": "auto",
-    "expected_tools": ["query_order"],
-    "history": [{"category": "售后", "resolution": "订单 ORD-1020 换货申请已提交"}],
+    "expected_tools": [
+      "query_order"
+    ],
+    "history": [
+      {
+        "category": "售后",
+        "resolution": "订单 ORD-1020 换货申请已提交"
+      }
+    ],
     "note": "history 上下文：之前提过 ORD-1020 换货，追问进度归售后"
   },
   {
@@ -419,7 +546,12 @@
     "message": "那个快递还在异常吗，能处理一下吗",
     "expected_action": "escalate",
     "expected_tools": [],
-    "history": [{"category": "物流", "resolution": "运单 SF1155993377 物流异常"}],
+    "history": [
+      {
+        "category": "物流",
+        "resolution": "运单 SF1155993377 物流异常"
+      }
+    ],
     "note": "history 上下文：之前物流异常，用户追问+要求处理→转人工"
   }
 ]
