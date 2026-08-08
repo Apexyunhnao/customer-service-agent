@@ -69,3 +69,7 @@ POST /api/ticket
 - 资金操作保持 mock（安全设计，非遗漏）
 - 无并发处理、无用户认证
 - 订单/物流/客户数据为模拟数据
+
+## 健康检查
+
+GET /health → `{"status":"ok","service":"ticket-agent"}`
