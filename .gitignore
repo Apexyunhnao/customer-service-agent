@@ -15,3 +15,5 @@ data/*.db
 # 日志
 logs/
 eval_output.txt
+# 面试准备文档不入库（只留本地 E:\面试准备\）
+docs/interview-prep.md
