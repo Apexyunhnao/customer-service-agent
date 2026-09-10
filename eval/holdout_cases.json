@@ -3,7 +3,7 @@
     "id": "TC-002",
     "category": "物流",
     "message": "我的单子ORD-1002到哪了，什么时候能收货",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]

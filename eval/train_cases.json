@@ -12,7 +12,7 @@
     "id": "TC-003",
     "category": "物流",
     "message": "你好，帮我看看ORD-1007发出来了没有",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -30,7 +30,7 @@
     "id": "TC-005",
     "category": "订单",
     "message": "麻烦查下ORD-1009，我前天下的单怎么还没动静",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_order"
     ]
@@ -130,7 +130,7 @@
     "id": "TC-022",
     "category": "物流",
     "message": "SF5544332211这个件帮我查下物流信息",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -139,7 +139,7 @@
     "id": "TC-023",
     "category": "物流",
     "message": "JD9876543210到什么地方了，等了好几天了",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -148,7 +148,7 @@
     "id": "TC-024",
     "category": "物流",
     "message": "YT4455667788物流走到哪一步了",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -157,7 +157,7 @@
     "id": "TC-025",
     "category": "物流",
     "message": "帮我跟踪一下快递ZT5566778899，一直没收到",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -166,7 +166,7 @@
     "id": "TC-026",
     "category": "物流",
     "message": "查下物流SF3366998855，昨天开始就没更新了",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -175,7 +175,7 @@
     "id": "TC-027",
     "category": "物流",
     "message": "JD3344556677物流轨迹帮我看看",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -184,7 +184,7 @@
     "id": "TC-028",
     "category": "物流",
     "message": "运单号YT1133995577现在在哪",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -193,7 +193,7 @@
     "id": "TC-029",
     "category": "物流",
     "message": "JD9876543210这个件怎么这么慢，帮我催催快递",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "urge_delivery"
     ]
@@ -202,7 +202,7 @@
     "id": "TC-030",
     "category": "物流",
     "message": "SF5544332211都三天了还没送到，能催一下吗",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "urge_delivery"
     ]
@@ -356,7 +356,7 @@
     "id": "TC-051",
     "category": "物流",
     "message": "JD9988005544动了没有，查一下",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -365,7 +365,7 @@
     "id": "TC-052",
     "category": "物流",
     "message": "SF9900112233什么时候能送到，我后天要出差",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -374,7 +374,7 @@
     "id": "TC-054",
     "category": "物流",
     "message": "ZT7722004488在哪了，帮忙看一眼",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_logistics"
     ]
@@ -398,7 +398,7 @@
     "id": "TC-H1",
     "category": "订单",
     "message": "我上次查的那个订单发货了没",
-    "expected_action": "auto",
+    "expected_action": "escalate",
     "expected_tools": [
       "query_order"
     ],

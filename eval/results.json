@@ -2,55 +2,54 @@
   "total": 59,
   "auto_expected": 25,
   "escalate_expected": 34,
-  "auto_success_count": 23,
-  "escalate_actual_count": 36,
-  "escalate_rate": "61.0%",
-  "category_accuracy": "100.0%",
-  "action_accuracy": "96.6%",
-  "auto_success_rate": "92.0%",
+  "auto_success_count": 25,
+  "escalate_actual_count": 34,
+  "escalate_rate": "57.6%",
+  "category_accuracy": "98.3%",
+  "action_accuracy": "100.0%",
+  "auto_success_rate": "100.0%",
   "tools_accuracy": "92.0%",
   "by_category": {
     "售后": {
       "total": 16,
       "category_accuracy": "100.0%",
-      "action_accuracy": "93.8%",
-      "auto_success_rate": "90.9%"
+      "action_accuracy": "100.0%",
+      "auto_success_rate": "100.0%"
     },
     "物流": {
       "total": 22,
-      "category_accuracy": "100.0%",
+      "category_accuracy": "95.5%",
       "action_accuracy": "100.0%",
       "auto_success_rate": "100.0%"
     },
     "订单": {
       "total": 21,
       "category_accuracy": "100.0%",
-      "action_accuracy": "95.2%",
-      "auto_success_rate": "92.3%"
+      "action_accuracy": "100.0%",
+      "auto_success_rate": "100.0%"
     }
   },
   "failed_count": 3,
   "failed_cases": [
     {
-      "id": "TC-011",
-      "category_expected": "订单",
+      "id": "TC-003",
+      "category_expected": "物流",
       "category_actual": "订单",
-      "action_expected": "auto",
+      "action_expected": "escalate",
       "action_actual": "escalate",
       "expected_tools": [
-        "query_order",
-        "refund_price_diff"
+        "query_logistics"
       ],
       "actual_tools": [
         "query_order",
-        "refund_price_diff"
+        "query_logistics"
       ],
-      "tools_ok": true,
-      "action_ok": false,
-      "category_ok": true,
+      "tools_ok": null,
+      "action_ok": true,
+      "category_ok": false,
       "auto_success": false,
-      "escalate_reason": "工具执行失败——refund_price_diff: 退差价金额 8999 元超出自动处理限额（最高 500 元），需转人工审批。",
-      "message": "我看到同款手机降价了，我买的ORD-1006能退差价吗，9号买的8999现在8499了"
+      "escalate_reason": "风险拦截——物流停滞：运单 SF5544332211（运输中），最后更新 2026-09-06 00:09:52（已 4 天未更新），需人工核实",
+      "message": "你好，帮我看看ORD-1007发出来了没有"
     },
     {
       "id": "TC-039",
@@ -74,22 +73,25 @@
       "message": "我下单时没注意看，ORD-1003这个手表想退了重新买个别的颜色"
     },
     {
-      "id": "TC-H2",
+      "id": "TC-049",
       "category_expected": "售后",
       "category_actual": "售后",
       "action_expected": "auto",
-      "action_actual": "escalate",
+      "action_actual": "auto",
       "expected_tools": [
+        "query_order",
+        "process_refund"
+      ],
+      "actual_tools": [
         "query_order"
       ],
-      "actual_tools": [],
       "tools_ok": false,
-      "action_ok": false,
+      "action_ok": true,
       "category_ok": true,
-      "auto_success": false,
-      "escalate_reason": "无法确定需要调用的工具，信息不足，转人工处理。",
-      "message": "我的换货申请现在什么状态"
+      "auto_success": true,
+      "escalate_reason": "",
+      "message": "ORD-1004耳机用了两周感觉降噪没宣传的那么好，能退吗"
     }
   ],
-  "elapsed_seconds": 184.5
+  "elapsed_seconds": 216.5
 }
