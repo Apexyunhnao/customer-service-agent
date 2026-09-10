@@ -7,7 +7,7 @@
 
 - 项目：客服工单处理 Agent（求职作品集，按公司标准开发）
 - 技术栈：Python 3.10+ / LangGraph / LangChain (langchain-openai) / FastAPI / SQLite / DeepSeek API
-- 开发工具：VS Code + Claude Code（Claude Code 写代码，架构与验收由羔丸把关）
+- 开发工具：VS Code + Claude Code（Claude Code 写代码，架构设计与验收由开发者本人负责）
 
 ## 〇、项目定位（企业视角，2026-08-03 确认）
 
