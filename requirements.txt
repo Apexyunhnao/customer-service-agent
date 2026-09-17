@@ -1,0 +1,25 @@
+# 直接依赖清单 —— 只列仓库代码里直接 import 的顶层包（外加启动命令需要的 uvicorn）。
+# 完整可复现的版本锁定（含全部传递依赖）见同目录 requirements.lock.txt（uv pip compile 生成，勿手改）。
+#
+# 版本口径（2026-09-16 定）：**精确钉死在本机实跑环境（Python 3.10 全局）实测通过的版本** ——
+#   README / METRICS 里的评估数字就是在这一套版本上跑出来的，锁文件要对齐它，而不是顺手升级。
+#   基准解释器：Python 3.11（本套版本已在 3.11 下冷安装 + 跑通测试与评估）。
+#
+# 为什么重写（2026-09-16）：
+#   ① 旧清单**漏了认证依赖 PyJWT** —— auth.py `import jwt`，冷安装起不来；
+#   ② 旧清单钉的 langgraph 0.2.x 与代码实际使用的 langgraph 1.x API 不符。
+
+fastapi==0.141.1
+uvicorn==0.52.1
+pydantic==2.13.4
+
+langgraph==1.2.10
+langchain-core==1.5.3
+langchain-openai==1.4.1
+
+python-dotenv==1.2.2
+
+PyJWT==2.14.0
+
+# ── 关键传递依赖：显式钉死以对齐实跑环境（langchain-openai 会拉 openai）──
+openai==2.52.0

@@ -1,0 +1,25 @@
+# API 密钥 - 绝不提交
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# 数据库
+data/*.db
+*.db-shm
+*.db-wal
+
+# 日志
+logs/
+eval_output.txt
+
+# 备份文件（改前快照，不入库）
+*.bak-*
+*.bak
+
+# 预防：以下路径出现在仓库内也不应被提交（提交前扫描提示，2026-09-16）
+.env.local
+node_modules

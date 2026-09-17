@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    env:
+      # CI 注入固定的测试专用 secret（认证是 fail-closed 的，不配就起不来）
+      AUTH_SECRET: ci-test-only-secret-not-a-real-key
+      DEEPSEEK_API_KEY: ci-placeholder-unused-by-mocked-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 冷安装（锁文件）
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.lock.txt
+
+      - name: 导入检查
+        run: python -c "import main; print('import main OK')"
+
+      - name: 测试（归属授权边界）
+        run: python tests/test_owner_authorization.py
+
+      - name: 启动 smoke（起服务 → 健康检查 → 未登录必须 401）
+        run: |
+          set -e
+          python -m uvicorn main:app --host 127.0.0.1 --port 8001 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8001/health >/dev/null 2>&1 && break
+            sleep 1
+          done
+          echo "health: $(curl -s http://127.0.0.1:8001/health)"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8001/api/ticket \
+                 -H 'Content-Type: application/json' -d '{"message":"ci smoke"}')
+          echo "未登录提交工单 -> $code"
+          test "$code" = "401"

@@ -1,0 +1,97 @@
+{
+  "total": 59,
+  "auto_expected": 25,
+  "escalate_expected": 34,
+  "auto_success_count": 25,
+  "escalate_actual_count": 34,
+  "escalate_rate": "57.6%",
+  "category_accuracy": "98.3%",
+  "action_accuracy": "100.0%",
+  "auto_success_rate": "100.0%",
+  "tools_accuracy": "92.0%",
+  "by_category": {
+    "售后": {
+      "total": 16,
+      "category_accuracy": "100.0%",
+      "action_accuracy": "100.0%",
+      "auto_success_rate": "100.0%"
+    },
+    "物流": {
+      "total": 22,
+      "category_accuracy": "95.5%",
+      "action_accuracy": "100.0%",
+      "auto_success_rate": "100.0%"
+    },
+    "订单": {
+      "total": 21,
+      "category_accuracy": "100.0%",
+      "action_accuracy": "100.0%",
+      "auto_success_rate": "100.0%"
+    }
+  },
+  "failed_count": 3,
+  "failed_cases": [
+    {
+      "id": "TC-003",
+      "category_expected": "物流",
+      "category_actual": "订单",
+      "action_expected": "escalate",
+      "action_actual": "escalate",
+      "expected_tools": [
+        "query_logistics"
+      ],
+      "actual_tools": [
+        "query_order",
+        "query_logistics"
+      ],
+      "tools_ok": null,
+      "action_ok": true,
+      "category_ok": false,
+      "auto_success": false,
+      "escalate_reason": "风险拦截——物流停滞：运单 SF5544332211（运输中），最后更新 2026-09-06 00:09:52（已 4 天未更新），需人工核实",
+      "message": "你好，帮我看看ORD-1007发出来了没有"
+    },
+    {
+      "id": "TC-039",
+      "category_expected": "售后",
+      "category_actual": "售后",
+      "action_expected": "auto",
+      "action_actual": "auto",
+      "expected_tools": [
+        "query_order",
+        "process_refund"
+      ],
+      "actual_tools": [
+        "query_order",
+        "process_exchange"
+      ],
+      "tools_ok": false,
+      "action_ok": true,
+      "category_ok": true,
+      "auto_success": true,
+      "escalate_reason": "",
+      "message": "我下单时没注意看，ORD-1003这个手表想退了重新买个别的颜色"
+    },
+    {
+      "id": "TC-049",
+      "category_expected": "售后",
+      "category_actual": "售后",
+      "action_expected": "auto",
+      "action_actual": "auto",
+      "expected_tools": [
+        "query_order",
+        "process_refund"
+      ],
+      "actual_tools": [
+        "query_order"
+      ],
+      "tools_ok": false,
+      "action_ok": true,
+      "category_ok": true,
+      "auto_success": true,
+      "escalate_reason": "",
+      "message": "ORD-1004耳机用了两周感觉降噪没宣传的那么好，能退吗"
+    }
+  ],
+  "elapsed_seconds": 216.5
+}
