@@ -5,6 +5,7 @@
     nodes.py  _RISK_KEYWORDS / _LOGISTICS_EMOTION_KEYWORDS
               _has_emotion(msg) -> bool            物流情绪词检测
               _check_fraud(msg) -> str | None      防诈骗组合关键词检测
+              _check_logistics_stale(results)      物流停滞检测（见下方「冻结时间」）
               _detect_risks(state) -> list[str]    风险总入口，五条规则按序执行
     db.py     can_transition(from, to) -> bool
               ALLOWED_TRANSITIONS / ALL_TICKET_STATES / STATE_*
@@ -14,6 +15,14 @@
 本文件用「正例 + 负例 + 边界」把当前行为钉死：将来谁改动了关键词或状态机，
 这里必须先失败，改动才是有意识的。
 
+五条规则**全部 5/5 已覆盖**，包括内部调用 datetime.now() 的 `_check_logistics_stale`
+（第 6 节）。它靠「冻结时间」做到确定性：用 unittest.mock.patch 把 `nodes.datetime`
+换成替身，`now()` 恒返回固定时刻 FROZEN_NOW，`strptime` 仍走真实实现，
+因此**不依赖真实时钟、跨午夜也不会抖**，同时不修改任何生产代码。
+
+另有一组转换（待审核 → 处理失败）属**未决 Known Issue**，本文件**不对它做正误判定**，
+见第 7 节内联注释与 E:\AI-Bridge\docs\KnownIssues-customer-service-agent-20260918.md。
+
 运行方式（不需要 pytest，也不需要 DEEPSEEK_API_KEY）：
 
     python tests/test_risk_rules_and_state_machine.py     # 退出码 0=全过 / 1=有失败
@@ -21,8 +30,12 @@
 """  # noqa: D400
 import os
 import sys
+from datetime import datetime, timedelta
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import nodes  # noqa: E402
 
 from nodes import (  # noqa: E402
     _RISK_KEYWORDS,
@@ -83,10 +96,55 @@ LEGAL_TRANSITIONS = {
 
 
 def _logistics(tracking_no: str, status: str) -> dict:
-    """造一条物流查询结果；**不带 updated_at** → _check_logistics_stale 会跳过，
-    这样本文件的断言就不会被「当前时间」污染（保持确定性、可重复）。"""
+    """造一条物流查询结果；**不带 updated_at** → _check_logistics_stale 会跳过。
+
+    这让第 4/5 节的断言不受「当前时间」影响（规则 3 不会被误触发，其余四条规则
+    可以单独观测）。规则 3 本身在第 6 节用冻结时间（见 _frozen_time）单独测。
+    """
     return {"tool_name": "query_logistics",
             "data": {"tracking_no": tracking_no, "status": status}}
+
+
+# ── 冻结时间：让 _check_logistics_stale 变成确定性函数 ──────────────────────
+#
+# nodes.py 里是 `from datetime import datetime, timedelta`，所以模块属性 nodes.datetime
+# 是**类本身**，可以直接被 patch 成替身。替身只需满足两点：
+#   1. now() 恒返回同一个固定时刻（阈值判断与 days_stale 用的是同一个「现在」）
+#   2. strptime() 仍走真实实现（保留 strptime，替身才解析得了时间戳）
+# timedelta 未被 patch，仍是真实的 timedelta，因此 `now() - timedelta(days=3)` 正常。
+LOGISTICS_TS_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+# 冻结时刻：选一个与真实「今天」无关的固定日期，避免测试随运行日期漂移。
+FROZEN_NOW = datetime(2026, 9, 18, 12, 0, 0)
+
+# _LOGISTICS_STALE_DAYS = 3（nodes.py），此处独立抄一份用于构造边界数据。
+STALE_THRESHOLD_DAYS = 3
+
+
+def _frozen_time(now: datetime):
+    """返回一个 patch 上下文：把 nodes.datetime 换成 now() 可控的替身。"""
+
+    class _FrozenDateTime:
+        @staticmethod
+        def now(tz=None) -> datetime:
+            return now
+
+        # 真实实现，替身才不会把合法时间戳也判成解析失败
+        strptime = staticmethod(datetime.strptime)
+
+    return patch.object(nodes, "datetime", _FrozenDateTime)
+
+
+def _to_ts(dt: datetime) -> str:
+    """渲染成 _check_logistics_stale 唯一接受的格式。"""
+    return dt.strftime(LOGISTICS_TS_FORMAT)
+
+
+def _logistics_updated(tracking_no: str, status: str, updated_at) -> dict:
+    """带 updated_at 的物流结果；只在 _frozen_time 上下文里使用才有确定性。"""
+    return {"tool_name": "query_logistics",
+            "data": {"tracking_no": tracking_no, "status": status,
+                     "updated_at": updated_at}}
 
 
 def _order(order_id: str, order_status: str) -> dict:
@@ -274,8 +332,123 @@ def main_test() -> int:
           _detect_risks({"user_message": "急",
                          "tool_results": [{"tool_name": "query_logistics"}]}) == [])
 
-    # ── 6. 状态机 ───────────────────────────────────────────────
-    section("6) can_transition —— 全部合法转换 True / 全部非法转换 False")
+    # ── 6. _check_logistics_stale ───────────────────────────────
+    section("6) _check_logistics_stale —— 物流停滞（冻结时间，不依赖真实时钟）")
+
+    # 阈值 = FROZEN_NOW - STALE_THRESHOLD_DAYS 天；实现是严格 `updated_dt < threshold`。
+    def at(days: int = 0, seconds: int = 0) -> str:
+        """FROZEN_NOW 之前 days 天 seconds 秒的时间戳字符串。"""
+        return _to_ts(FROZEN_NOW - timedelta(days=days, seconds=seconds))
+
+    # 6.1 正常触发：状态 ∈ {运输中, 异常} 且早于 now-3d
+    with _frozen_time(FROZEN_NOW):
+        for status in ("运输中", "异常"):
+            reason = nodes._check_logistics_stale(
+                [_logistics_updated("SF1001", status, at(days=5))])
+            check(f"正常触发：status={status} 且 5 天未更新 → 返回非 None",
+                  reason is not None, f"实际={reason!r}")
+            check(f"  文案含运单号 / 状态 / 天数（{status}）",
+                  reason is not None and "SF1001" in reason and status in reason
+                  and "已 5 天未更新" in reason, f"实际={reason!r}")
+
+    # 6.2 未超期（负例）
+    with _frozen_time(FROZEN_NOW):
+        check("未超期：1 天前更新 → 返回 None",
+              nodes._check_logistics_stale(
+                  [_logistics_updated("SF1001", "异常", at(days=1))]) is None)
+
+    # 6.3 边界：实现用严格 `<`，所以「恰好第 3 天」落在相等侧 → 不触发；
+    #     刚过 3 天 1 秒才触发。下面两条把这条分界线钉死。
+    with _frozen_time(FROZEN_NOW):
+        check("[锁定现状] 边界相等侧：updated == now-3d 恰好第 3 天 → 不触发"
+              "（实现是严格 `<`，不是 `<=`）",
+              nodes._check_logistics_stale(
+                  [_logistics_updated("SF1001", "异常", at(days=3))]) is None)
+        just_over = nodes._check_logistics_stale(
+            [_logistics_updated("SF1002", "异常", at(days=3, seconds=1))])
+        check("[锁定现状] 边界另一侧：刚过第 3 天 1 秒 → 触发，且天数为 3",
+              just_over is not None and "已 3 天未更新" in just_over,
+              f"实际={just_over!r}")
+
+    # 6.4 状态不匹配：只认「运输中」「异常」，其它状态停滞多久都不触发
+    with _frozen_time(FROZEN_NOW):
+        for status in ("已签收", "已揽收", "派送中", ""):
+            check(f"状态不匹配：status={status!r} 即使 100 天未更新也不触发",
+                  nodes._check_logistics_stale(
+                      [_logistics_updated("SF1001", status, at(days=100))]) is None)
+
+    # 6.5 updated_at 缺失或为空 → 跳过
+    with _frozen_time(FROZEN_NOW):
+        check("updated_at 键缺失 → 跳过，不触发",
+              nodes._check_logistics_stale(
+                  [{"tool_name": "query_logistics",
+                    "data": {"tracking_no": "SF1001", "status": "异常"}}]) is None)
+        for empty in ("", None):
+            check(f"updated_at = {empty!r} → 跳过，不触发",
+                  nodes._check_logistics_stale(
+                      [_logistics_updated("SF1001", "异常", empty)]) is None)
+        # 跳过是 continue 而不是 break/return：前一条没有时间戳，后一条仍要被检查
+        skipped_then_hit = nodes._check_logistics_stale([
+            {"tool_name": "query_logistics",
+             "data": {"tracking_no": "SF0001", "status": "异常"}},
+            _logistics_updated("SF0002", "异常", at(days=4)),
+        ])
+        check("跳过是 continue 而非 break：缺 updated_at 的条目不影响后续条目命中",
+              skipped_then_hit is not None and "SF0002" in skipped_then_hit,
+              f"实际={skipped_then_hit!r}")
+
+    # 6.6 updated_at 格式不合规 → try/except ValueError → 静默跳过（不抛异常、不打日志）
+    with _frozen_time(FROZEN_NOW):
+        for label, raw in [
+            ("ISO 带 T", "2026-09-10T10:00:00"),
+            ("带毫秒", "2026-09-10 10:00:00.123"),
+            ("带时区", "2026-09-10T10:00:00+08:00"),
+            ("只有日期", "2026-09-10"),
+            ("任意乱码", "not-a-date"),
+            ("纯空白", "   "),
+        ]:
+            check(f"[锁定现状] updated_at 格式不合规（{label}）→ 静默跳过、不抛异常",
+                  nodes._check_logistics_stale(
+                      [_logistics_updated("SF1001", "异常", raw)]) is None,
+                  "见「观察记录」第 6 条：数据层改格式会让本规则静默消失")
+
+    # 6.7 tool_results 结构异常 → 跳过而不抛异常
+    with _frozen_time(FROZEN_NOW):
+        for label, entry in [
+            ("data 为 None", {"tool_name": "query_logistics", "data": None}),
+            ("data 为字符串", {"tool_name": "query_logistics", "data": "oops"}),
+            ("缺 data 键", {"tool_name": "query_logistics"}),
+        ]:
+            check(f"结构异常（{label}）→ 返回 None 且不抛异常",
+                  nodes._check_logistics_stale([entry]) is None)
+
+    # 6.8 多条结果：按遍历顺序取**第一条命中**的
+    with _frozen_time(FROZEN_NOW):
+        first_hit = nodes._check_logistics_stale([
+            _logistics_updated("SF0001", "已签收", at(days=99)),   # 状态不匹配，跳过
+            _logistics_updated("SF0002", "异常", at(days=10)),     # 第一条命中
+            _logistics_updated("SF0003", "运输中", at(days=10)),   # 也命中，但排在后面
+        ])
+        check("多条结果：跳过不匹配的，返回第一条命中的 SF0002（遍历顺序确定）",
+              first_hit is not None and "SF0002" in first_hit
+              and "SF0003" not in first_hit, f"实际={first_hit!r}")
+
+    # 6.9 空列表
+    with _frozen_time(FROZEN_NOW):
+        check("空 tool_results → None", nodes._check_logistics_stale([]) is None)
+
+    # 6.10 经 _detect_risks 集成：规则 3 是五条里唯一依赖时间的，冻结后同样确定。
+    #      消息里不含任何情绪词，确保命中的只能是规则 3 而不是规则 4。
+    with _frozen_time(FROZEN_NOW):
+        r_stale = _detect_risks({
+            "user_message": "帮我看下物流",
+            "tool_results": [_logistics_updated("SF1001", "异常", at(days=7))],
+        })
+        check("集成：经 _detect_risks 也能稳定触发「物流停滞」（五条规则全部可测）",
+              len(r_stale) == 1 and "物流停滞" in r_stale[0], f"实际={r_stale!r}")
+
+    # ── 7. 状态机 ───────────────────────────────────────────────
+    section("7) can_transition —— 全部合法转换 True / 非法转换 False（排除 1 组未决 Known Issue）")
 
     check("ALL_TICKET_STATES 恰好 6 个且无重复",
           len(ALL_TICKET_STATES) == 6 and len(set(ALL_TICKET_STATES)) == 6,
@@ -295,10 +468,21 @@ def main_test() -> int:
           {(f, t) for f, ts in ALLOWED_TRANSITIONS.items() for t in ts} == LEGAL_TRANSITIONS,
           f"实际={sorted((f, t) for f, ts in ALLOWED_TRANSITIONS.items() for t in ts)!r}")
 
+    # 未决 Known Issue：ALLOWED_TRANSITIONS[待审核] 不含「处理失败」，但 db.review_ticket
+    # 在「审批通过但 executor 执行失败」时会把工单**直接 UPDATE 成「处理失败」**，
+    # 不走 can_transition。见 E:\AI-Bridge\docs\KnownIssues-customer-service-agent-20260918.md
+    # （KI-2026-09-18-01）。
+    # 本测试**不对这组转换做正误判定**：既不要求 True 也不要求 False，因此把它从
+    # 「非法转换必须 False」的扫描里**排除**——排除的含义是「不判定」，不是「断言它合法」。
+    # 该问题定案后，请在此处补一条**新的、明确的**断言（True 或 False 取决于最终选择）。
+    KNOWN_ISSUE_TRANSITIONS = {(STATE_PENDING_REVIEW, STATE_FAILED)}
+
     illegal = [(f, t) for f in ALL_TICKET_STATES for t in ALL_TICKET_STATES
-               if (f, t) not in LEGAL_TRANSITIONS]
+               if (f, t) not in LEGAL_TRANSITIONS
+               and (f, t) not in KNOWN_ISSUE_TRANSITIONS]
     bad = [(f, t) for f, t in illegal if can_transition(f, t) is not False]
-    check(f"其余 {len(illegal)} 条非法转换全部返回 False",
+    check(f"其余 {len(illegal)} 条非法转换全部返回 False"
+          f"（已排除 {len(KNOWN_ISSUE_TRANSITIONS)} 组未决 Known Issue，不判定其正误）",
           not bad, f"被误判为合法的：{bad!r}")
 
     check("不能跳级：新建 → 已解决 必须 False（必须先经处理中）",
@@ -327,9 +511,22 @@ def main_test() -> int:
           can_transition("", "") is False and can_transition(STATE_NEW, "") is False)
     check("大小写/空白变体不被当成合法状态",
           can_transition("新建 ", STATE_PROCESSING) is False)
-    check("[锁定现状] 待审核 → 处理失败 返回 False（但 review_ticket 实际会这么写）",
-          can_transition(STATE_PENDING_REVIEW, STATE_FAILED) is False,
-          "见「观察记录」第 8 条：状态机常量与审批实现不一致")
+    # 【未决 Known Issue，本测试不做判定】
+    # 转换 (待审核 → 处理失败) 目前处于**两处代码互相矛盾**的状态：
+    #   - ALLOWED_TRANSITIONS[待审核] = {已解决, 已驳回}，不含「处理失败」
+    #     → can_transition(待审核, 处理失败) 返回 False
+    #   - db.review_ticket 在「审批通过但 executor 执行失败」时，会把工单从「待审核」
+    #     **直接 UPDATE 成「处理失败」**，不走 can_transition
+    #     → 这条转换在真实路径上确实会发生
+    # 完整证据（含独立 probe 与调用点检索）：
+    #   E:\AI-Bridge\docs\KnownIssues-customer-service-agent-20260918.md
+    #   条目 KI-2026-09-18-01
+    # 因为无法确定「哪一边才是对的」，本测试**既不要求它 True 也不要求它 False**，
+    # 上面的非法转换扫描也已把这一组排除。把缺陷断言成 False = 把不一致固化成正确行为。
+    # TODO(定案后)：该 Known Issue 解决后，在此处补一条**新的、明确的**断言。
+    #   方向 A：把 STATE_FAILED 加进 ALLOWED_TRANSITIONS[待审核] → 断言 True
+    #   方向 B：让 review_ticket 失败路径改走 can_transition / 引入独立状态 → 断言 False
+    # 在此之前，本文件对该转换保持沉默。
 
     # ── 汇总 ────────────────────────────────────────────────────
     print()
@@ -374,7 +571,10 @@ def main_test() -> int:
 #
 # 7. [非纯函数] _check_logistics_stale 内部多次调用 datetime.now()，阈值判断与
 #    days_stale 计算用的是两个不同的「现在」，跨午夜时描述里的天数可能与触发判断
-#    不一致。本测试因此刻意不构造超期数据，只测其余四条规则。
+#    不一致。（生产代码里的这个事实依然成立，**但已不再作为跳过测试的理由**）
+#    第 6 节用 patch 把 nodes.datetime 换成 now() 固定的替身，让两次「现在」在测试中
+#    必然相同，从而确定性地覆盖了这条规则；因此这个不一致在生产中仍可能存在，
+#    测试里则被冻结时间屏蔽掉了，本文件不对它做正误判定。
 #
 # 8. [状态机与实现不一致] db.review_ticket 在「批准但动作执行失败」时，把工单从
 #    「待审核」直接置为「处理失败」，但 ALLOWED_TRANSITIONS[待审核] 只有
